@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="chronos">
+  <target name="install" description="Install dependencies">
+    <exec executable="npm" dir="${sourceDir}" failonerror="true">
+      <arg value="install"/>
+    </exec>
+    <echo message="install project dependencies" />
+  </target>
+  <target name="eslint" description="Check source lint">
+    <exec executable="npm" dir="${sourceDir}" failonerror="true">
+      <arg value="run"/>
+      <arg value="lint"/>
+    </exec>
+  </target>
+  <target name="build" description="Generate assets">
+    <delete includeemptydirs="true" failonerror="false">
+      <fileset dir="${sourceDir}/build" includes="**/*"/>
+    </delete>
+    <exec executable="npm" dir="${sourceDir}" failonerror="true">
+      <arg value="run"/>
+      <arg value="build"/>
+    </exec>
+    <echo message="build project with npm" />
+    <mkdir dir="${sourceDir}/build/assets" />
+    <copy todir="${sourceDir}/build/assets">
+      <fileset dir="${sourceDir}/assets" />
+    </copy>
+    <copy file="${sourceDir}/index.html" tofile="${sourceDir}/build/index.html"/>
+  </target>
+
+  <target name="assets.uptodate" depends="sourceDir.check" if="sourceDir.nochanges">
+    <echo>${sourceDir} Hasn't been updated, skipping asset compilation.</echo>
+  </target>
+
+  <target name="sourceDir.check">
+    <uptodate property="sourceDir.nochanges">
+      <srcfiles dir="${sourceDir}" includes="**/*.js" />
+      <srcfiles dir="${sourceDir}" includes="**/*.jsx" />
+      <srcfiles dir="${sourceDir}" includes="**/*.css" />
+      <mapper type="merge" to="${sourceDir}/build/assets/js/bundle.js" />
+    </uptodate>
+  </target>
+
+  <target name="generateAssets" depends="assets.uptodate" unless="sourceDir.nochanges">
+    <echo message="Building assets" />
+    <antcall target="install">
+    </antcall>
+    <antcall target="build">
+    </antcall>
+  </target>
+</project>
