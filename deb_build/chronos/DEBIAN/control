@@ -1,0 +1,8 @@
+Package: chronos 
+Version: 3.0.4 
+Section: base 
+Priority: optional 
+Architecture: amd64 
+Depends: openjdk-8-jdk
+Maintainer: aratik711@gmail.com
+Description: run chronos as a service
